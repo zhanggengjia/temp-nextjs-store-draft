@@ -4,6 +4,7 @@ import './globals.css';
 import Navbar from '@/components/navbar/Navbar';
 import Container from '@/components/global/Container';
 import Providers from './providers';
+import { ClerkProvider } from '@clerk/nextjs';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -26,16 +27,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className="overflow-y-scroll">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+    <ClerkProvider>
+      <html
+        lang="en"
         suppressHydrationWarning
+        className="[scrollbar-gutter:stable] overflow-x-hidden"
       >
-        <Providers>
-          <Navbar />
-          <Container className="py-20">{children}</Container>
-        </Providers>
-      </body>
-    </html>
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          suppressHydrationWarning
+        >
+          <Providers>
+            <Navbar />
+            <Container className="py-20">{children}</Container>
+          </Providers>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
