@@ -9,11 +9,15 @@ import { LuAlignLeft } from 'react-icons/lu';
 import Link from 'next/link';
 import { Button } from '../ui/button';
 import { links } from '@/utils/links';
-import { UserIcon } from 'lucide-react';
+import UserIcon from './UserIcon';
 import { SignedIn, SignedOut, SignInButton, SignUpButton } from '@clerk/nextjs';
 import SignOutLink from './SignOutLink';
+import { auth } from '@clerk/nextjs/server';
 
-function LinksDropdown() {
+async function LinksDropdown() {
+  const { userId } = await auth();
+  const isAdmin = userId === process.env.ADMIN_USER_ID;
+
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
@@ -38,6 +42,7 @@ function LinksDropdown() {
         </SignedOut>
         <SignedIn>
           {links.map((link) => {
+            if (link.label === 'dashboard' && !isAdmin) return null;
             return (
               <DropdownMenuItem key={link.href}>
                 <Link href={link.href} className="capitalize w-full">

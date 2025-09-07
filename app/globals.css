@@ -118,3 +118,12 @@
     @apply bg-background text-foreground;
   }
 }
+
+globals.css
+/* 當 Clerk modal 鎖住捲動時，強制取消 body/html 的補償 */
+:where(html, body)[style*='margin-right'] {
+  margin-right: 0 !important;
+}
+:where(html, body)[style*='padding-right'] {
+  padding-right: 0 !important;
+}
