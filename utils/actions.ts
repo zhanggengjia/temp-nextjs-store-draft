@@ -3,7 +3,8 @@ import db from '@/utils/db';
 import { currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { imageSchema, productSchema, validateWithZodSchema } from './schemas';
-import { uploadImage } from './supabase';
+import { deleteImage, uploadImage } from './supabase';
+import { revalidatePath } from 'next/cache';
 
 const getAuthUser = async () => {
   const user = await currentUser();
@@ -92,4 +93,53 @@ export const fetchAdminProducts = async () => {
     },
   });
   return products;
+};
+
+export const deleteProductAction = async (
+  prevState: { productId: string },
+  _formData: FormData
+) => {
+  const { productId } = prevState;
+  await getAdminUser();
+  try {
+    const product = await db.product.delete({
+      where: {
+        id: productId,
+      },
+    });
+
+    await deleteImage(product.image);
+
+    // 通知 Next.js 重新驗證 /admin/products 這個路徑的快取
+    // 讓刪除後的頁面能顯示最新的產品清單，而不是舊快取
+    revalidatePath('/admin/products');
+    return { message: 'product removed' };
+  } catch (error) {
+    return renderError(error);
+  }
+};
+
+export const fetchAdminProductDetails = async (productId: string) => {
+  await getAdminUser();
+  const product = await db.product.findUnique({
+    where: {
+      id: productId,
+    },
+  });
+  if (!product) redirect('/admin/products');
+  return product;
+};
+
+export const updateProductAction = async (
+  prevState: any,
+  formData: FormData
+) => {
+  return { message: 'Product updated sucessfully' };
+};
+
+export const updateProductImageAction = async (
+  prevState: any,
+  formData: FormData
+) => {
+  return { message: 'Product Image updated sucessfully' };
 };

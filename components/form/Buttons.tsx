@@ -8,7 +8,7 @@ import { SignInButton } from '@clerk/nextjs';
 import { FaRegHeart, FaHeart } from 'react-icons/fa';
 import { LuTrash2 } from 'react-icons/lu';
 import { TbReload } from 'react-icons/tb';
-import { FaPenSquare } from 'react-icons/fa';
+import { LiaEditSolid } from 'react-icons/lia';
 
 type btnSize = 'default' | 'lg' | 'sm';
 
@@ -42,3 +42,31 @@ export function SubmitButton({
     </Button>
   );
 }
+
+type actionType = 'edit' | 'delete';
+
+export const IconButton = ({ actionType }: { actionType: actionType }) => {
+  const { pending } = useFormStatus();
+
+  const renderIcon = () => {
+    switch (actionType) {
+      case 'edit':
+        return <LiaEditSolid className="size-6" />;
+      case 'delete':
+        return <LuTrash2 className="size-6" />;
+      default:
+        const never: never = actionType;
+        throw new Error(`Invalid action type: ${never}`);
+    }
+  };
+  return (
+    <Button
+      type="submit"
+      size="icon"
+      variant="link"
+      className="p-2 cursor-pointer"
+    >
+      {pending ? <TbReload className="animate-spin" /> : renderIcon()}
+    </Button>
+  );
+};
