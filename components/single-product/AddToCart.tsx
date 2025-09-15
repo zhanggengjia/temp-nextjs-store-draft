@@ -1,12 +1,8 @@
-import React from 'react';
-import { Button } from '../ui/button';
+// AddToCart.server.tsx
+import { auth } from '@clerk/nextjs/server';
+import AddToCartClient from './AddToCartClient';
 
-function AddToCart({ productId }: { productId: string }) {
-  return (
-    <Button className="capitalize mt-8" size="lg">
-      add to cart
-    </Button>
-  );
+export default async function AddToCart({ productId }: { productId: string }) {
+  const { userId } = await auth(); // 伺服器就知道是否登入
+  return <AddToCartClient productId={productId} signedIn={!!userId} />;
 }
-
-export default AddToCart;
